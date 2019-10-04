@@ -1,0 +1,30 @@
+dist: trusty
+sudo: false
+language: ruby
+rvm:
+  - 2.4.6
+
+services: docker
+
+before_install:
+  - gem uninstall -v '>= 2' -i $(rvm gemdir)@global -ax bundler || true
+  - gem install bundler -v '< 2'
+
+jobs:
+  include:
+    - stage: "Test Build"
+      env:
+        - REPO_URL=brajivgandhi/test
+        - RELEASE_TAG=v$TRAVIS_BUILD_NUMBER
+        - REPO=test
+
+      before_script:
+        - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+        - docker pull $REPO_URL:latest || true
+      script:
+        - docker build --cache-from $REPO:latest -t $REPO:latest -t $REPO:$RELEASE_TAG -f Dockerfile .
+      after_success:
+        - docker tag $REPO:$RELEASE_TAG $REPO_URL:$RELEASE_TAG
+        - docker tag $REPO:latest $REPO_URL:latest
+        - docker push $REPO_URL:$RELEASE_TAG
+        - docker push $REPO_URL:latest
