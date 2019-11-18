@@ -23,7 +23,7 @@ jobs:
         - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
         - docker pull $REPO_URL:latest || true
       script:
-        - docker build --cache-from $REPO:latest -t $REPO:latest -t $REPO:$RELEASE_TAG -f Dockerfile .
+        - docker build --cache-from $REPO_URL:latest -t $REPO:latest -t $REPO:$RELEASE_TAG -f Dockerfile .
       after_success:
         - docker tag $REPO:$RELEASE_TAG $REPO_URL:$RELEASE_TAG
         - docker tag $REPO:latest $REPO_URL:latest
