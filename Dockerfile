@@ -16,5 +16,5 @@ RUN apk add --virtual .builds-deps \
       build-base \
       linux-headers \
       git
-#COPY Gemfile ./
-#RUN bundle install --retry=3 --jobs=4 --without development test
+COPY Gemfile ./
+RUN bundle install --retry=3 --jobs=4 --without development test
